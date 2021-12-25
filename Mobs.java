@@ -8,6 +8,7 @@ public class Mobs {
 	protected boolean alive;
 	protected String trait;
 	protected String traitBonus;
+	boolean lastHitTraitOccured;
 
 	public int getHp() {
 		return hp;
@@ -55,14 +56,54 @@ public class Mobs {
 			this.alive = false;
 	}
 
+	public int getLvl() {
+		return lvl;
+	}
+
+	public void setLvl(int lvl) {
+		this.lvl = lvl;
+	}
+
+	public String getTrait() {
+		return trait;
+	}
+
+	public void setTrait(String trait) {
+		this.trait = trait;
+	}
+
+	public String getTraitBonus() {
+		return traitBonus;
+	}
+
+	public void setTraitBonus(String traitBonus) {
+		this.traitBonus = traitBonus;
+	}
+
+	public boolean isLastHitTraitOccured() {
+		return lastHitTraitOccured;
+	}
+
+	public void setLastHitTraitOccured(boolean lastHitTraitOccured) {
+		this.lastHitTraitOccured = lastHitTraitOccured;
+	}
+
 	int basicAttack(Player p) {
+		this.lastHitTraitOccured = false;
 		int max = 115;
 		int min = 90;
 		int range = max - min + 1;
 		double rand = (int) (Math.random() * range) + min;
 		int dmgDealt = (int) (this.dmg * rand) / 100;
 		p.setHp(p.getHp() - dmgDealt);
+		if (this.traitBonus(dmgDealt)) {
+			this.lastHitTraitOccured = true;
+		}
 		return dmgDealt;
+	}
+
+	boolean traitBonus(int dmg) {
+		return false;
 	}
 
 	void printMobInfo() {
@@ -74,8 +115,7 @@ public class Mobs {
 		System.out.println("Trait bonus: " + this.traitBonus);
 		System.out.println();
 	}
-	
-	
+
 	void printSkeletonAscii() {
 		System.out.println("                             .___.");
 		System.out.println("          /)              ,-^     ^-.");

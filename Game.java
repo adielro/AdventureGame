@@ -26,7 +26,7 @@ public class Game {
 	Font normalFont = new Font("Times New Roman", Font.PLAIN, 28);
 	JButton startButton, choice1, choice2, choice3, choice4, choice5;
 	JTextArea mainTextArea;
-	Player p = new Player();
+	Player p;
 	String position;
 	Mobs currentMonster;
 	boolean clickAssure = false;
@@ -71,10 +71,6 @@ public class Game {
 
 		con.add(namePanel);
 		con.add(startButtonPanel);
-		p.setGold(10000);
-//		for (int i = 0; i < 100; i++) {
-//			p.levelUp();
-//		}
 	}
 
 	public void createGameScreen() {
@@ -166,7 +162,7 @@ public class Game {
 //		expLabelNumber.setFont(normalFont);
 //		expLabelNumber.setForeground(Color.white);
 //		playerPanel.add(expLabelNumber);
-
+		p = new Player();
 		playerSetup();
 	}
 
@@ -298,6 +294,16 @@ public class Game {
 		choice1.setText("Keep fighting!");
 		choice2.setText("Go back town");
 		choice3.setText("");
+		clickAssure = false;
+	}
+
+	public void lose() {
+		position = "dead";
+		mainTextArea.setText(mainTextArea.getText() + "\nYou are dead!");
+		choice1.setText("Start over");
+		choice2.setText("");
+		choice3.setText("");
+		clickAssure = false;
 	}
 
 	public class TitleScreenHandler implements ActionListener {
@@ -373,31 +379,29 @@ public class Game {
 					}
 				}
 			}
-			if (clickAssure) {
 
-				if (position.equals("wonFight")) {
-					switch (yourChoice) {
-					case "c1":
-						fightOrFlight();
-						break;
-					case "c2":
-						townGate();
-						break;
-					}
+			if (position.equals("wonFight") && clickAssure) {
+				switch (yourChoice) {
+				case "c1":
+					clickAssure = false;
+					fightOrFlight();
+					break;
+				case "c2":
+					townGate();
+					break;
 				}
-
-				if (position.equals("fightOrFlight")) {
-					switch (yourChoice) {
-					case "c1":
-						mainTextArea.setText(currentMonster.getClass().getSimpleName() + " HP: "
-								+ currentMonster.getHp() + "\nYour turn!");
-						clickAssure = false;
-						fightScene();
-						break;
-					case "c2":
-						playerSetup();
-						break;
-					}
+			}
+			if (position.equals("fightOrFlight") && clickAssure) {
+				switch (yourChoice) {
+				case "c1":
+					mainTextArea.setText(currentMonster.getClass().getSimpleName() + " HP: " + currentMonster.getHp()
+							+ "\nYour turn!");
+					clickAssure = false;
+					fightScene();
+					break;
+				case "c2":
+					playerSetup();
+					break;
 				}
 			}
 
@@ -453,7 +457,19 @@ public class Game {
 								+ "\nYou swinged your sword at the " + mobName + " dealing " + dmgToMob + " damage\n");
 						int dmgToPlayer = currentMonster.basicAttack(p);
 						mainTextArea.setText(mainTextArea.getText() + mobName + " slashed you in return dealing "
-								+ dmgToPlayer + " damage!\nNow what?");
+								+ dmgToPlayer + " damage");
+						if (currentMonster.lastHitTraitOccured) {
+							if (currentMonster instanceof Undead) {
+								Undead temp = (Undead) currentMonster;
+								mainTextArea.setText(mainTextArea.getText() + " and stole "
+										+ (int) (dmgToPlayer * temp.lifeStealRate / 100) + " hp");
+							}
+						}
+						if (p.getHp() <= 0) {
+							p.setHp(0);
+							lose();
+						} else
+							mainTextArea.setText(mainTextArea.getText() + "\nNow what?");
 						hpLabel.setText("HP: " + p.getHp());
 						break;
 					case "c2":
@@ -470,6 +486,16 @@ public class Game {
 						townGate();
 						break;
 					}
+				}
+			}
+
+			if (position == "dead" && clickAssure) {
+				switch (yourChoice) {
+				case "c1":
+					p = new Player();
+					playerSetup();
+					break;
+
 				}
 			}
 
