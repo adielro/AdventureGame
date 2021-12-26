@@ -33,6 +33,8 @@ class Hats extends Item {
 			this.dmgBonus = (int) (((p.getLvl() * rand) + 1) / 100) + 3;
 			this.price = 10 * (int) (((p.getLvl() * rand) + 1) / 100) + 3;
 			this.passive = "This unique item will finger you while you sleep";
+			if (this.price <= 0)
+				this.price = (int) (Math.random()*10)%4;
 			break;
 		case 2:
 			this.name = "Banana helmet";
@@ -44,6 +46,8 @@ class Hats extends Item {
 			this.dmgBonus = (int) ((p.getLvl() / 100) * rand);
 			this.price = (int) ((p.getLvl() / 100) * rand);
 			this.passive = "Banana helmet, use it with caution!";
+			if (this.price <= 0)
+				this.price = (int) (Math.random()*10)%4;
 			break;
 		}
 

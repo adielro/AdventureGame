@@ -1,15 +1,15 @@
 
 public class Player {
-	private int lvl, maxHp, hp, dmg, currentExp, expNeeded, gold, potions, levelsToNewShop, upgradePoints;
+	private int lvl, maxHp, hp, dmg, currentExp, expNeeded, gold, potions, levelsToNewShop, upgradePoints, potionPrice;
 	private Item[] inventory = new Item[6]; // 0 helmet, 1 chest, 2 Gauntlet, 3 legs, 4 shoes, 5 weapon.
 	boolean alive, threeLevels;
 	Item[] shop;
 
 	public Player() {
 		this.lvl = 1;
-		this.maxHp = 100;
-		this.hp = 100;
-		this.dmg = 25;
+		this.maxHp = 150;
+		this.hp = this.maxHp;
+		this.dmg = 30;
 		this.currentExp = 0;
 		this.expNeeded = 10;
 		this.gold = 0;
@@ -17,6 +17,15 @@ public class Player {
 		this.threeLevels = false;
 		this.levelsToNewShop = 0;
 		this.upgradePoints = 0;
+		this.potionPrice = 5;
+	}
+
+	public int getPotionPrice() {
+		return potionPrice;
+	}
+
+	public void setPotionPrice(int potionPrice) {
+		this.potionPrice = potionPrice;
 	}
 
 	public int getLvl() {
@@ -140,7 +149,7 @@ public class Player {
 		else {
 			System.out.println("-----------------------------------------------------");
 			System.out.println(m.getClass().getSimpleName() + " Fight's back using his basic attack!");
-			m.basicAttack(this);
+			//m.basicAttack(this);
 			this.printBattleDetaisl(m);
 		}
 		return dmgDealt;
@@ -217,16 +226,15 @@ public class Player {
 			}
 			inventory[0] = i;
 			this.equipItem(i);
-			this.gold -= i.price;
 			return true;
 		}
 		return false;
 	}
 
 	boolean buyPotion() {
-		if (this.gold >= 10) {
+		if (this.gold >= potionPrice) {
 			this.potions++;
-			this.gold -= 10;
+			this.gold -= potionPrice;
 			return true;
 		}
 		return false;

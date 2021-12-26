@@ -1,16 +1,12 @@
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,8 +18,9 @@ public class Game {
 	Container con;
 	JPanel namePanel, startButtonPanel, mainTextPanel, choiceButtonPanel, playerPanel;
 	JLabel nameLabel, hpLabel, hpLabelNumber, expLabel, expLabelNumber;
-	Font titleFont = new Font("Times New Roman", Font.PLAIN, 90);
-	Font normalFont = new Font("Times New Roman", Font.PLAIN, 28);
+	Font titleFont = new Font("Times New Roman", Font.PLAIN, 160);
+	Font startButtonFont = new Font("Times New Roman", Font.PLAIN, 80);
+	Font normalFont = new Font("Times New Roman", Font.PLAIN, 55);
 	JButton startButton, choice1, choice2, choice3, choice4, choice5;
 	JTextArea mainTextArea;
 	Player p;
@@ -31,38 +28,48 @@ public class Game {
 	Mobs currentMonster;
 	boolean clickAssure = false;
 	boolean createNewShop = true;
+	boolean missingGold = false;
 	TitleScreenHandler tsHandler = new TitleScreenHandler();
 	ChoiceHandler choiceHandler = new ChoiceHandler();
 
 	public static void main(String[] args) {
 
 		new Game();
+
 	}
 
 	public Game() {
+
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension dim = toolkit.getScreenSize();
+
 		window = new JFrame();
-		window.setSize(800, 650);
+		window.setSize(dim.width / 2, dim.height - dim.height / 3);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setBackground(Color.black);
 		window.setLayout(null);
-		window.setVisible(true);
 		con = window.getContentPane();
+		window.setLocation(1000, 360);
+		window.setResizable(false);
 
 		namePanel = new JPanel();
-		namePanel.setBounds(100, 100, 600, 150);
+
+		namePanel.setBounds(window.getWidth() / 6, dim.height / 50, window.getWidth() - window.getWidth() / 3,
+				window.getHeight() / 3);
 		namePanel.setBackground(Color.black);
 		nameLabel = new JLabel("Text Adventure");
 		nameLabel.setForeground(Color.white);
 		nameLabel.setFont(titleFont);
 
 		startButtonPanel = new JPanel();
-		startButtonPanel.setBounds(300, 400, 250, 100);
+		startButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() / 2, window.getWidth() / 3,
+				window.getHeight() / 3);
 		startButtonPanel.setBackground(Color.black);
 
 		startButton = new JButton("START");
 		startButton.setBackground(Color.black);
 		startButton.setForeground(Color.white);
-		startButton.setFont(normalFont);
+		startButton.setFont(startButtonFont);
 		startButton.addActionListener(tsHandler);
 		startButton.setFocusPainted(false);
 
@@ -71,6 +78,7 @@ public class Game {
 
 		con.add(namePanel);
 		con.add(startButtonPanel);
+		window.setVisible(true);
 	}
 
 	public void createGameScreen() {
@@ -78,12 +86,14 @@ public class Game {
 		startButton.setVisible(false);
 
 		mainTextPanel = new JPanel();
-		mainTextPanel.setBounds(50, 100, 700, 350);
+		mainTextPanel.setBounds(window.getWidth() / 30, 100, window.getWidth() - window.getWidth() / 50,
+				window.getHeight() / 2);
 		mainTextPanel.setBackground(Color.black);
 		con.add(mainTextPanel);
 
 		mainTextArea = new JTextArea("This is the main text area");
-		mainTextArea.setBounds(50, 100, 700, 350);
+		mainTextArea.setBounds(window.getWidth() / 100, window.getHeight() / 10,
+				window.getWidth() - window.getWidth() / 50, window.getHeight() / 2);
 		mainTextArea.setBackground(Color.black);
 		mainTextArea.setForeground(Color.white);
 		mainTextArea.setFont(normalFont);
@@ -92,7 +102,8 @@ public class Game {
 		mainTextPanel.add(mainTextArea);
 
 		choiceButtonPanel = new JPanel();
-		choiceButtonPanel.setBounds(250, 400, 300, 150);
+		choiceButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() - window.getHeight() / 2,
+				window.getWidth() / 3, window.getHeight() / 3);
 		choiceButtonPanel.setBackground(Color.black);
 		choiceButtonPanel.setLayout(new GridLayout(5, 1));
 		con.add(choiceButtonPanel);
@@ -104,9 +115,8 @@ public class Game {
 		choice1.setFocusPainted(false);
 		choice1.addActionListener(choiceHandler);
 		choice1.setActionCommand("c1");
-
-		// choice1.setBorder(BorderFactory.createEmptyBorder());
-
+		choice1.setForeground(Color.orange);
+//		choice1.setBorder(BorderFactory.createEmptyBorder());
 		choiceButtonPanel.add(choice1);
 		choice2 = new JButton("choice two");
 		choice2.setBackground(Color.black);
@@ -115,6 +125,7 @@ public class Game {
 		choice2.setFocusPainted(false);
 		choice2.addActionListener(choiceHandler);
 		choice2.setActionCommand("c2");
+		choice2.setForeground(Color.orange);
 		choiceButtonPanel.add(choice2);
 		choice3 = new JButton("choice three");
 		choice3.setBackground(Color.black);
@@ -123,6 +134,7 @@ public class Game {
 		choice3.setFocusPainted(false);
 		choice3.addActionListener(choiceHandler);
 		choice3.setActionCommand("c3");
+		choice3.setForeground(Color.orange);
 		choiceButtonPanel.add(choice3);
 		choice4 = new JButton("choice four");
 		choice4.setBackground(Color.black);
@@ -131,6 +143,7 @@ public class Game {
 		choice4.setFocusPainted(false);
 		choice4.addActionListener(choiceHandler);
 		choice4.setActionCommand("c4");
+		choice4.setForeground(Color.orange);
 		choiceButtonPanel.add(choice4);
 		choice5 = new JButton("choice five");
 		choice5.setBackground(Color.black);
@@ -139,12 +152,13 @@ public class Game {
 		choice5.setFocusPainted(false);
 		choice5.addActionListener(choiceHandler);
 		choice5.setActionCommand("c5");
+		choice5.setForeground(Color.orange);
 		choiceButtonPanel.add(choice5);
 
 		playerPanel = new JPanel();
-		playerPanel.setBounds(100, 15, 600, 50);
+		playerPanel.setBounds(100, 15, window.getWidth() / 2, 100);
 		playerPanel.setBackground(Color.black);
-		playerPanel.setLayout(new GridLayout(1, 2));
+		playerPanel.setLayout(new GridLayout(1, 1));
 		con.add(playerPanel);
 		hpLabel = new JLabel("HP: ");
 		hpLabel.setFont(normalFont);
@@ -163,11 +177,12 @@ public class Game {
 //		expLabelNumber.setForeground(Color.white);
 //		playerPanel.add(expLabelNumber);
 		p = new Player();
+		choiceButtonPanel.setVisible(true);
 		playerSetup();
 	}
 
 	public void playerSetup() {
-		hpLabel.setText("HP: " + p.getHp());
+		hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 		expLabel.setText("EXP: " + p.getCurrentExp() + " / " + p.getExpNeeded());
 
 		townGate();
@@ -194,11 +209,12 @@ public class Game {
 		if (this.createNewShop == true)
 			p.shop = generateShop();
 		createNewShop = false;
-		hpLabel.setText("HP: " + p.getHp());
+		hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 		expLabel.setText("Gold: " + p.getGold());
-		mainTextArea.setText("1. " + getItemDetails(p.shop[0]) + "\n2." + getItemDetails(p.shop[1]) + "\n3. "
-				+ getItemDetails(p.shop[2]) + "\n4. Health potion, Health regen: 25% hp, Price: 10 Gold"
-				+ "\nWhat would you like to do?");
+		if (!missingGold)
+			mainTextArea.setText("1. " + getItemDetails(p.shop[0]) + "\n2." + getItemDetails(p.shop[1]) + "\n3. "
+					+ getItemDetails(p.shop[2]) + "\n4. Health potion, Health regen: 25% hp, Price: "
+					+ p.getPotionPrice() + " Gold" + "\nWhat would you like to do?");
 		if (p.shop[0] != null)
 			choice1.setText("Buy " + p.shop[0].name);
 		else
@@ -214,6 +230,7 @@ public class Game {
 
 		choice4.setText("Buy health potion (" + p.getPotions() + ")");
 		choice5.setText("Go back town");
+		missingGold = false;
 	}
 
 	public Item[] generateShop() {
@@ -286,7 +303,8 @@ public class Game {
 		position = "fight";
 		choice1.setText("Use basic attack");
 		choice2.setText("Use condom of Ozz");
-		choice3.setText("Run");
+		choice3.setText("Drink potion (" + p.getPotions() + " left)");
+		choice4.setText("Run");
 	}
 
 	public void wonFight() {
@@ -294,6 +312,8 @@ public class Game {
 		choice1.setText("Keep fighting!");
 		choice2.setText("Go back town");
 		choice3.setText("");
+		choice4.setText("");
+		choice5.setText("");
 		clickAssure = false;
 	}
 
@@ -304,6 +324,10 @@ public class Game {
 		choice2.setText("");
 		choice3.setText("");
 		clickAssure = false;
+	}
+
+	public void missingGoldPrint(Item i) {
+		mainTextArea.setText(mainTextArea.getText() + "\nMissing " + (i.price - p.getGold()) + " gold!");
 	}
 
 	public class TitleScreenHandler implements ActionListener {
@@ -333,7 +357,7 @@ public class Game {
 				case "c3":
 					if (p.getPotions() > 0)
 						p.drinkPotion();
-					hpLabel.setText("HP: " + p.getHp());
+					hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 					choice3.setText("Drink potion (" + p.getPotions() + " left)");
 					break;
 				case "c4":
@@ -351,22 +375,33 @@ public class Game {
 				if (clickAssure) {
 					switch (yourChoice) {
 					case "c1":
-						if (p.shop[0] != null)
+						if (p.shop[0] != null) {
 							if (p.buyItem(p.shop[0]) == true) {
 								p.shop[0] = null;
-							}
+							} else
+								missingGoldPrint(p.shop[0]);
+							missingGold = true;
+						}
 						shop();
 						break;
 					case "c2":
-						if (p.shop[1] != null)
+						if (p.shop[1] != null) {
 							if (p.buyItem(p.shop[1]) == true)
 								p.shop[1] = null;
+							else
+								missingGoldPrint(p.shop[1]);
+							missingGold = true;
+						}
+
 						shop();
 						break;
 					case "c3":
 						if (p.shop[2] != null)
 							if (p.buyItem(p.shop[2]) == true)
 								p.shop[2] = null;
+							else
+								missingGoldPrint(p.shop[2]);
+						missingGold = true;
 						shop();
 						break;
 					case "c4":
@@ -412,7 +447,7 @@ public class Game {
 					case "c1":
 						if (p.getUpgradePoints() > 0) {
 							p.upgradeMaxHp();
-							hpLabel.setText("HP: " + p.getHp());
+							hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 							showStats();
 						} else
 							mainTextArea.setText("Level: " + p.getLvl() + "\nExp requiered for next level: "
@@ -443,7 +478,7 @@ public class Game {
 					case "c1":
 						int dmgToMob = p.basicAttack(currentMonster);
 						if (!currentMonster.isAlive()) {
-							hpLabel.setText("HP: " + p.getHp());
+							hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 							mainTextArea.setText(mobName + " is dead!\nExp gained: " + currentMonster.exp
 									+ "\nGold gained: " + currentMonster.goldDrop + "\nTotal gold: " + p.getGold()
 									+ "\n\n\nNow what?");
@@ -470,7 +505,7 @@ public class Game {
 							lose();
 						} else
 							mainTextArea.setText(mainTextArea.getText() + "\nNow what?");
-						hpLabel.setText("HP: " + p.getHp());
+						hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 						break;
 					case "c2":
 						mainTextArea.setText(
@@ -478,11 +513,18 @@ public class Game {
 						dmgToPlayer = currentMonster.basicAttack(p);
 						mainTextArea.setText(mainTextArea.getText() + mobName + " slashed you in return dealing "
 								+ dmgToPlayer + " damage!\nNow what?");
-						hpLabel.setText("HP: " + p.getHp());
+						hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 						fightScene();
 						break;
 
 					case "c3":
+						if (p.getPotions() > 0)
+							p.drinkPotion();
+						hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
+						choice3.setText("Drink potion (" + p.getPotions() + " left)");
+						break;
+
+					case "c4":
 						townGate();
 						break;
 					}
@@ -493,6 +535,7 @@ public class Game {
 				switch (yourChoice) {
 				case "c1":
 					p = new Player();
+					createNewShop = true;
 					playerSetup();
 					break;
 

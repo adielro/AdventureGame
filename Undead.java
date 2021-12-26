@@ -4,7 +4,7 @@ public class Undead extends Mobs {
 	int lifeStealRate;
 
 	boolean traitBonus(int dmgDealt) {
-		var lifeSteal = Math.random() * 100;
+		double lifeSteal = Math.random() * 100;
 		if (lifeSteal < this.lifeStealChance) {
 			System.out.println(dmgDealt);
 			double heal = (double) dmgDealt * ((double) lifeStealRate / 100);
@@ -43,7 +43,7 @@ class Wraith extends Undead {
 		this.lifeStealChance = 20;
 		this.lifeStealRate = 20;
 		this.hp = 115 + (p.getLvl() - 1) * 15;
-		this.dmg = 7 + (p.getLvl() - 1) * 3;
+		this.dmg = 6 + (p.getLvl() - 1) * 3;
 		this.exp = 6 * p.getLvl();
 		this.goldDrop = 9 + (int) (Math.random() * 3 + 1) * p.getLvl();
 		this.alive = true;
@@ -56,10 +56,10 @@ class GrimReaper extends Undead {
 	public GrimReaper(Player p) {
 		this.lifeStealChance = 30;
 		this.lifeStealRate = 20;
-		this.hp = 125 + (p.getLvl() - 1) * 20;
-		this.dmg = 8 + (p.getLvl() - 1) * 5;
-		this.exp = 7 * p.getLvl();
-		this.goldDrop = 10 + (int) (Math.random() * 4 + 1) * p.getLvl();
+		this.hp = 125 + (p.getLvl() - 1) * 17;
+		this.dmg = 7 + (p.getLvl() - 1) * 4;
+		this.exp = 9 * p.getLvl();
+		this.goldDrop = 12 + (int) (Math.random() * 4 + 1) * p.getLvl();
 		this.alive = true;
 		this.trait = "Undead";
 	}
