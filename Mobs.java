@@ -98,6 +98,8 @@ public class Mobs {
 		p.setHp(p.getHp() - dmgDealt);
 		if (this.traitBonus(dmgDealt)) {
 			this.lastHitTraitOccured = true;
+			if (this instanceof Beast)
+				p.setHp(p.getHp() - dmgDealt);
 		}
 		return dmgDealt;
 	}

@@ -1,8 +1,9 @@
 
 public class Player {
-	private int lvl, maxHp, hp, dmg, currentExp, expNeeded, gold, potions, levelsToNewShop, upgradePoints, potionPrice;
+	private int lvl, maxHp, hp, dmg, currentExp, expNeeded, gold, potions, levelsToNewShop, upgradePoints, potionPrice,
+			potionPriceCoeff;
 	private Item[] inventory = new Item[6]; // 0 helmet, 1 chest, 2 Gauntlet, 3 legs, 4 shoes, 5 weapon.
-	boolean alive, threeLevels;
+	boolean alive, threeLevels, lvlUp;
 	Item[] shop;
 
 	public Player() {
@@ -11,13 +12,15 @@ public class Player {
 		this.hp = this.maxHp;
 		this.dmg = 30;
 		this.currentExp = 0;
-		this.expNeeded = 10;
+		this.expNeeded = 20;
 		this.gold = 0;
 		this.potions = 0;
 		this.threeLevels = false;
 		this.levelsToNewShop = 0;
 		this.upgradePoints = 0;
-		this.potionPrice = 5;
+		this.lvlUp = false;
+		this.potionPriceCoeff = 2;
+		potionPriceUpdate();
 	}
 
 	public int getPotionPrice() {
@@ -149,7 +152,7 @@ public class Player {
 		else {
 			System.out.println("-----------------------------------------------------");
 			System.out.println(m.getClass().getSimpleName() + " Fight's back using his basic attack!");
-			//m.basicAttack(this);
+			// m.basicAttack(this);
 			this.printBattleDetaisl(m);
 		}
 		return dmgDealt;
@@ -171,11 +174,13 @@ public class Player {
 	}
 
 	void levelUp() {
+		potionPriceUpdate();
+		this.lvlUp = true;
 		this.levelsToNewShop++;
 		this.lvl++;
 		this.hp += (int) ((this.maxHp - this.hp) * 0.5);
-		this.currentExp = 0;
-		this.expNeeded *= 1.5;
+		this.currentExp -= this.expNeeded;
+		this.expNeeded *= 1.25;
 		this.upgradePoints += 5;
 		System.out.println("*****************************************************");
 		System.out.println("                       Level up!");
@@ -184,6 +189,8 @@ public class Player {
 			this.levelsToNewShop = 0;
 			threeLevels = true;
 		}
+		if (this.currentExp >= this.getExpNeeded())
+			this.levelUp();
 
 	}
 
@@ -212,32 +219,33 @@ public class Player {
 
 	boolean buyItem(Item i) {
 		if (this.gold < i.price) {
-			System.out.println("Missing " + (i.price - this.gold) + " gold.");
 			return false;
 		}
 		this.gold -= i.price;
-		switch (i.getClass().getSimpleName()) {
-		case "Hats":
-			if (inventory[0] != null) {
-				System.out
-						.println("Selling your old item.. ew.\nAnyway, you get only 25% of the price, it's sweaty af.");
-				this.gold += (int) (inventory[0].price * 0.25);
-				this.removeItem(this.inventory[0]);
-			}
-			inventory[0] = i;
-			this.equipItem(i);
-			return true;
+		if (inventory[i.placeInInventory] != null) {
+			System.out.println("Selling your old item.. ew.\nAnyway, you get only 25% of the price, it's sweaty af.");
+			this.gold += (int) (inventory[i.placeInInventory].price * 0.25);
+			this.removeItem(this.inventory[i.placeInInventory]);
+
 		}
-		return false;
+		inventory[i.placeInInventory] = i;
+		this.equipItem(i);
+		return true;
+
 	}
 
 	boolean buyPotion() {
+
 		if (this.gold >= potionPrice) {
 			this.potions++;
 			this.gold -= potionPrice;
 			return true;
 		}
 		return false;
+	}
+
+	void potionPriceUpdate() {
+		potionPrice = this.lvl * potionPriceCoeff;
 	}
 
 	void drinkPotion() {
@@ -262,8 +270,8 @@ public class Player {
 	}
 
 	void upgradeMaxHp() {
-		this.maxHp += 5;
-		this.hp += 5;
+		this.maxHp += 8;
+		this.hp += 8;
 		this.upgradePoints--;
 	}
 

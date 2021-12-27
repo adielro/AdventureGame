@@ -2,27 +2,37 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 public class Game {
 	JFrame window;
 	Container con;
 	JPanel namePanel, startButtonPanel, mainTextPanel, choiceButtonPanel, playerPanel;
-	JLabel nameLabel, hpLabel, hpLabelNumber, expLabel, expLabelNumber;
-	Font titleFont = new Font("Times New Roman", Font.PLAIN, 160);
-	Font startButtonFont = new Font("Times New Roman", Font.PLAIN, 80);
-	Font normalFont = new Font("Times New Roman", Font.PLAIN, 55);
+	JLabel levelLabel, nameLabel, hpLabel, expLabel, expLabelNumber;
+	Toolkit toolkit = Toolkit.getDefaultToolkit();
+	Dimension dim = toolkit.getScreenSize();
+	Font titleFont = new Font("Times New Roman", Font.PLAIN, (int) (dim.getHeight() / 13));
+	Font startButtonFont = new Font("Times New Roman", Font.PLAIN, (int) (dim.getHeight() / 30));
+	Font normalFont = new Font("Times New Roman", Font.PLAIN, (int) (dim.getHeight() / 40));
 	JButton startButton, choice1, choice2, choice3, choice4, choice5;
-	JTextArea mainTextArea;
+	JTextPane mainTextArea;
 	Player p;
 	String position;
 	Mobs currentMonster;
@@ -31,6 +41,9 @@ public class Game {
 	boolean missingGold = false;
 	TitleScreenHandler tsHandler = new TitleScreenHandler();
 	ChoiceHandler choiceHandler = new ChoiceHandler();
+	JPanelWithBackground startScreen;
+	StyledDocument doc;
+	javax.swing.text.Style style;
 
 	public static void main(String[] args) {
 
@@ -40,69 +53,89 @@ public class Game {
 
 	public Game() {
 
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Dimension dim = toolkit.getScreenSize();
-
 		window = new JFrame();
 		window.setSize(dim.width / 2, dim.height - dim.height / 3);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setBackground(Color.black);
 		window.setLayout(null);
 		con = window.getContentPane();
-		window.setLocation(1000, 360);
+		window.setLocation((int) (dim.getWidth() / 4), (int) (dim.getHeight() / 5));
 		window.setResizable(false);
+		startScreen = null;
+		try {
+			startScreen = new JPanelWithBackground();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		startScreen.setBounds(0, 0, dim.width / 2, dim.height - dim.height / 3);
+//		window.add(startScreen);
+		startScreen.transferFocusBackward();
 
-		namePanel = new JPanel();
-
-		namePanel.setBounds(window.getWidth() / 6, dim.height / 50, window.getWidth() - window.getWidth() / 3,
-				window.getHeight() / 3);
-		namePanel.setBackground(Color.black);
+//		namePanel = new JPanel();
+//
+//		namePanel.setBounds(window.getWidth() / 6, dim.height / 50, window.getWidth() - window.getWidth() / 3,
+//				window.getHeight() / 3);
+//		namePanel.setBackground(Color.black);
 		nameLabel = new JLabel("Text Adventure");
-		nameLabel.setForeground(Color.white);
+		nameLabel.setForeground(Color.black);
 		nameLabel.setFont(titleFont);
-
-		startButtonPanel = new JPanel();
-		startButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() / 2, window.getWidth() / 3,
+		nameLabel.setBounds(window.getWidth() / 6, dim.height / 50, window.getWidth() - window.getWidth() / 3,
 				window.getHeight() / 3);
-		startButtonPanel.setBackground(Color.black);
+//		startButtonPanel = new JPanel();
+//		startButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() - (window.getHeight() / 4),
+//				window.getWidth() / 3, window.getHeight() / 3);
+//		startButtonPanel.setBackground(Color.black);
 
 		startButton = new JButton("START");
 		startButton.setBackground(Color.black);
-		startButton.setForeground(Color.white);
+		startButton.setForeground(Color.orange);
 		startButton.setFont(startButtonFont);
 		startButton.addActionListener(tsHandler);
 		startButton.setFocusPainted(false);
+		startButton.setBounds(window.getWidth() / 2 - (window.getWidth() / 10),
+				window.getHeight() - (window.getHeight() / 4), window.getWidth() / 6, window.getHeight() / 15);
+//		namePanel.add(nameLabel);
+//		startButtonPanel.add(startButton);
 
-		namePanel.add(nameLabel);
-		startButtonPanel.add(startButton);
+//		con.add(nameLabel);
+		startScreen.setLayout(null);
+		startScreen.add(nameLabel);
+		startScreen.add(startButton);
 
-		con.add(namePanel);
-		con.add(startButtonPanel);
+//		con.add(namePanel);
+//		con.add(startButtonPanel);
+		con.add(startScreen);
 		window.setVisible(true);
+
 	}
 
 	public void createGameScreen() {
-		namePanel.setVisible(false);
+//		startScreen.setVisible(false);
+//		namePanel.setVisible(false);
+//		startButtonPanel.setVisible(false);
 		startButton.setVisible(false);
 
 		mainTextPanel = new JPanel();
-		mainTextPanel.setBounds(window.getWidth() / 30, 100, window.getWidth() - window.getWidth() / 50,
-				window.getHeight() / 2);
+		mainTextPanel.setBounds(0, window.getHeight() / 10, window.getWidth(), window.getHeight() / 3);
 		mainTextPanel.setBackground(Color.black);
 		con.add(mainTextPanel);
 
-		mainTextArea = new JTextArea("This is the main text area");
-		mainTextArea.setBounds(window.getWidth() / 100, window.getHeight() / 10,
-				window.getWidth() - window.getWidth() / 50, window.getHeight() / 2);
+		mainTextArea = new JTextPane();
+		mainTextArea.setBounds(0, window.getHeight() / 10, window.getWidth(), window.getHeight() / 4);
 		mainTextArea.setBackground(Color.black);
 		mainTextArea.setForeground(Color.white);
 		mainTextArea.setFont(normalFont);
-		mainTextArea.setLineWrap(true);
+//		mainTextArea.setLineWrap(true);
 		mainTextArea.setEditable(false);
+		doc = mainTextArea.getStyledDocument();
+
+		style = mainTextArea.addStyle("I'm a Style", null);
+
 		mainTextPanel.add(mainTextArea);
 
 		choiceButtonPanel = new JPanel();
-		choiceButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() - window.getHeight() / 2,
+		choiceButtonPanel.setBounds(window.getWidth() / 3, window.getHeight() - (int) (window.getHeight() / 2.6),
 				window.getWidth() / 3, window.getHeight() / 3);
 		choiceButtonPanel.setBackground(Color.black);
 		choiceButtonPanel.setLayout(new GridLayout(5, 1));
@@ -156,13 +189,17 @@ public class Game {
 		choiceButtonPanel.add(choice5);
 
 		playerPanel = new JPanel();
-		playerPanel.setBounds(100, 15, window.getWidth() / 2, 100);
+		playerPanel.setBounds(0, window.getHeight() / 100, window.getWidth(), window.getHeight() / 20);
 		playerPanel.setBackground(Color.black);
-		playerPanel.setLayout(new GridLayout(1, 1));
+		playerPanel.setLayout(new GridLayout(1, 3));
 		con.add(playerPanel);
+		levelLabel = new JLabel("Level: ");
+		levelLabel.setFont(normalFont);
+		levelLabel.setForeground(Color.white);
+		playerPanel.add(levelLabel);
 		hpLabel = new JLabel("HP: ");
 		hpLabel.setFont(normalFont);
-		hpLabel.setForeground(Color.white);
+		hpLabel.setForeground(Color.red);
 		playerPanel.add(hpLabel);
 //		hpLabelNumber = new JLabel();
 //		hpLabelNumber.setFont(normalFont);
@@ -170,7 +207,7 @@ public class Game {
 //		playerPanel.add(hpLabelNumber);
 		expLabel = new JLabel("EXP: ");
 		expLabel.setFont(normalFont);
-		expLabel.setForeground(Color.white);
+		expLabel.setForeground(Color.yellow);
 		playerPanel.add(expLabel);
 //		expLabelNumber = new JLabel();
 //		expLabelNumber.setFont(normalFont);
@@ -182,6 +219,7 @@ public class Game {
 	}
 
 	public void playerSetup() {
+		levelLabel.setText("Level: " + p.getLvl());
 		hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 		expLabel.setText("EXP: " + p.getCurrentExp() + " / " + p.getExpNeeded());
 
@@ -211,10 +249,214 @@ public class Game {
 		createNewShop = false;
 		hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 		expLabel.setText("Gold: " + p.getGold());
-		if (!missingGold)
-			mainTextArea.setText("1. " + getItemDetails(p.shop[0]) + "\n2." + getItemDetails(p.shop[1]) + "\n3. "
-					+ getItemDetails(p.shop[2]) + "\n4. Health potion, Health regen: 25% hp, Price: "
-					+ p.getPotionPrice() + " Gold" + "\nWhat would you like to do?");
+		if (!missingGold) {
+			String item1 = getItemDetails(p.shop[0]);
+			String item2 = getItemDetails(p.shop[1]);
+			String item3 = getItemDetails(p.shop[2]);
+			mainTextArea.setText(
+					"1." + item1 + "\n2." + item2 + "\n3." + item3 + "\n4.Health potion, Health regen: 25% hp, Price: "
+							+ p.getPotionPrice() + " Gold" + "\nWould you like to buy anything?");
+			// ---------------- item 1
+			if (p.shop[0] != null) {
+
+				int hpDiff = 0;
+				int hpInd = mainTextArea.getText().indexOf("HP:", mainTextArea.getText().indexOf("1.")) + 4;
+				String hpDiffStr = "" + 0;
+
+				int dmgDiff = 0;
+				int dmgInd = mainTextArea.getText().indexOf("DMG:", mainTextArea.getText().indexOf("1.")) + 7;
+				String dmgDiffStr = "" + 0;
+
+				if (p.getInventory()[p.shop[0].placeInInventory] != null) {
+
+					if (p.getInventory()[p.shop[0].placeInInventory].hpBonus != p.shop[0].hpBonus) {
+						hpDiff = p.getInventory()[p.shop[0].placeInInventory].hpBonus - p.shop[0].hpBonus;
+
+						if (hpDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							hpDiffStr = "-" + hpDiff;
+						} else {
+							hpDiff *= -1;
+							hpDiffStr = "+" + hpDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+
+						doc.insertString(hpInd, hpDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+//--------------------- DMG
+					if (p.getInventory()[p.shop[0].placeInInventory].dmgBonus != p.shop[0].dmgBonus) {
+						dmgDiff = p.getInventory()[p.shop[0].placeInInventory].dmgBonus - p.shop[0].dmgBonus;
+
+						if (dmgDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							dmgDiffStr = "-" + dmgDiff;
+						} else {
+							dmgDiff *= -1;
+							dmgDiffStr = "+" + dmgDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					// ----------------
+				} else {
+					hpDiffStr = "" + p.shop[0].hpBonus;
+					dmgDiffStr = "" + p.shop[0].dmgBonus;
+					try {
+						doc.insertString(hpInd, hpDiffStr, style);
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+
+			}
+
+			// ---------------- item 2
+			if (p.shop[1] != null) {
+				int hpDiff = 0;
+				int hpInd = mainTextArea.getText().indexOf("HP:", mainTextArea.getText().indexOf("2.")) + 4;
+				String hpDiffStr = "" + 0;
+
+				int dmgDiff = 0;
+				int dmgInd = mainTextArea.getText().indexOf("DMG:", mainTextArea.getText().indexOf("2.")) + 7;
+				String dmgDiffStr = "" + 0;
+
+				if (p.getInventory()[p.shop[1].placeInInventory] != null) {
+
+					if (p.getInventory()[p.shop[1].placeInInventory].hpBonus != p.shop[1].hpBonus) {
+						hpDiff = p.getInventory()[p.shop[1].placeInInventory].hpBonus - p.shop[1].hpBonus;
+
+						if (hpDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							hpDiffStr = "-" + hpDiff;
+						} else {
+							hpDiff *= -1;
+							hpDiffStr = "+" + hpDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+
+						doc.insertString(hpInd, hpDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+//--------------------- DMG
+					if (p.getInventory()[p.shop[1].placeInInventory].dmgBonus != p.shop[1].dmgBonus) {
+						dmgDiff = p.getInventory()[p.shop[1].placeInInventory].dmgBonus - p.shop[1].dmgBonus;
+
+						if (dmgDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							dmgDiffStr = "-" + dmgDiff;
+						} else {
+							dmgDiff *= -1;
+							dmgDiffStr = "+" + dmgDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					// ----------------
+				} else {
+					hpDiffStr = "" + p.shop[1].hpBonus;
+					dmgDiffStr = "" + p.shop[1].dmgBonus;
+					try {
+						doc.insertString(hpInd, hpDiffStr, style);
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			}
+			// ---------------- item 3
+			if (p.shop[2] != null) {
+				int hpDiff = 0;
+				int hpInd = mainTextArea.getText().indexOf("HP:", mainTextArea.getText().indexOf("3.")) + 4;
+				String hpDiffStr = "" + 0;
+
+				int dmgDiff = 0;
+				int dmgInd = mainTextArea.getText().indexOf("DMG:", mainTextArea.getText().indexOf("3.")) + 7;
+				String dmgDiffStr = "" + 0;
+
+				if (p.getInventory()[p.shop[2].placeInInventory] != null) {
+
+					if (p.getInventory()[p.shop[2].placeInInventory].hpBonus != p.shop[2].hpBonus) {
+						hpDiff = p.getInventory()[p.shop[2].placeInInventory].hpBonus - p.shop[2].hpBonus;
+
+						if (hpDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							hpDiffStr = "-" + hpDiff;
+						} else {
+							hpDiff *= -1;
+							hpDiffStr = "+" + hpDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+
+						doc.insertString(hpInd, hpDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					// --------------------- DMG
+					if (p.getInventory()[p.shop[2].placeInInventory].dmgBonus != p.shop[2].dmgBonus) {
+						dmgDiff = p.getInventory()[p.shop[2].placeInInventory].dmgBonus - p.shop[2].dmgBonus;
+
+						if (dmgDiff > 0) { // red
+							StyleConstants.setForeground(style, Color.red);
+							dmgDiffStr = "-" + dmgDiff;
+						} else {
+							dmgDiff *= -1;
+							dmgDiffStr = "+" + dmgDiff;
+							StyleConstants.setForeground(style, Color.green);
+						}
+					}
+					try {
+
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					// ----------------
+				} else {
+					hpDiffStr = "" + p.shop[2].hpBonus;
+					dmgDiffStr = "" + p.shop[2].dmgBonus;
+					try {
+						doc.insertString(hpInd, hpDiffStr, style);
+						doc.insertString(dmgInd, dmgDiffStr, style);
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			}
+		}
 		if (p.shop[0] != null)
 			choice1.setText("Buy " + p.shop[0].name);
 		else
@@ -234,16 +476,37 @@ public class Game {
 	}
 
 	public Item[] generateShop() {
+
 		Item[] shop = new Item[3];
 		for (int i = 0; i < shop.length; i++) {
-			shop[i] = new Hats(p);
+			int itemType = (int) (Math.random() * 6) + 1;
+			switch (itemType) {
+			case 1:
+				shop[i] = new Hats(p);
+				break;
+			case 2:
+				shop[i] = new Chest(p);
+				break;
+			case 3:
+				shop[i] = new Gloves(p);
+				break;
+			case 4:
+				shop[i] = new Pants(p);
+				break;
+			case 5:
+				shop[i] = new Shoes(p);
+				break;
+			case 6:
+				shop[i] = new Weapon(p);
+				break;
+			}
 		}
 		return shop;
 	}
 
 	public String getItemDetails(Item i) {
 		if (i != null) {
-			return i.name + ", HP bonus: " + i.hpBonus + ", DMG bonus: " + i.dmgBonus + ", Price: " + i.price + " Gold";
+			return i.name + ", HP: " + ", DMG: " + ", Price: " + i.price + " Gold";
 		} else
 			return "Bought";
 
@@ -263,8 +526,8 @@ public class Game {
 	}
 
 	public void generateRandomMob(Player p) {
-		int randNum = (int) (Math.random() * 4) + 1;
-		Mobs monster;
+		int randNum = (int) (Math.random() * 10) + 1;
+		Mobs monster = null;
 		switch (randNum) {
 		case 1:
 			monster = new Skeleton(p);
@@ -278,9 +541,25 @@ public class Game {
 		case 4:
 			monster = new Wolf(p);
 			break;
-		default:
-			monster = new Skeleton(p);
+		case 5:
+			monster = new Vampire(p);
 			break;
+		case 6:
+			monster = new Zombie(p);
+			break;
+		case 7:
+			monster = new Bigfoot(p);
+			break;
+		case 8:
+			monster = new Minotaur(p);
+			break;
+		case 9:
+			monster = new Centaurs(p);
+			break;
+		case 10:
+			monster = new Goblin(p);
+			break;
+
 		}
 		this.currentMonster = monster;
 	}
@@ -289,7 +568,7 @@ public class Game {
 		position = "fightOrFlight";
 		if (this.currentMonster == null || !this.currentMonster.isAlive())
 			generateRandomMob(p);
-		mainTextArea.setText("You encountered an enemy!\nDetails: " + currentMonster.getClass().getSimpleName()
+		mainTextArea.setText("You encountered an enemy!\nName: " + currentMonster.getClass().getSimpleName()
 				+ "\nTrait: " + currentMonster.trait + "\nHP: " + currentMonster.getHp() + "\nTrait bonus: "
 				+ currentMonster.traitBonus + "\nYour move?");
 		choice1.setText("Bring it.");
@@ -308,6 +587,7 @@ public class Game {
 	}
 
 	public void wonFight() {
+		levelLabel.setText("Level: " + p.getLvl());
 		position = "wonFight";
 		choice1.setText("Keep fighting!");
 		choice2.setText("Go back town");
@@ -320,14 +600,21 @@ public class Game {
 	public void lose() {
 		position = "dead";
 		mainTextArea.setText(mainTextArea.getText() + "\nYou are dead!");
-		choice1.setText("Start over");
+		choice1.setText("");
 		choice2.setText("");
 		choice3.setText("");
+		choice4.setText("");
+		choice5.setText("Start over");
 		clickAssure = false;
 	}
 
 	public void missingGoldPrint(Item i) {
-		mainTextArea.setText(mainTextArea.getText() + "\nMissing " + (i.price - p.getGold()) + " gold!");
+		String search = mainTextArea.getText();
+		int ind = search.indexOf("Missing");
+		if (ind == -1) {
+			StyleConstants.setForeground(style, Color.white);
+			mainTextArea.setText(mainTextArea.getText() + "\nMissing " + (i.price - p.getGold()) + " gold!");
+		}
 	}
 
 	public class TitleScreenHandler implements ActionListener {
@@ -378,17 +665,20 @@ public class Game {
 						if (p.shop[0] != null) {
 							if (p.buyItem(p.shop[0]) == true) {
 								p.shop[0] = null;
-							} else
+								shop();
+							} else {
 								missingGoldPrint(p.shop[0]);
+							}
 							missingGold = true;
 						}
 						shop();
 						break;
 					case "c2":
 						if (p.shop[1] != null) {
-							if (p.buyItem(p.shop[1]) == true)
+							if (p.buyItem(p.shop[1]) == true) {
 								p.shop[1] = null;
-							else
+								shop();
+							} else
 								missingGoldPrint(p.shop[1]);
 							missingGold = true;
 						}
@@ -397,9 +687,10 @@ public class Game {
 						break;
 					case "c3":
 						if (p.shop[2] != null)
-							if (p.buyItem(p.shop[2]) == true)
+							if (p.buyItem(p.shop[2]) == true) {
 								p.shop[2] = null;
-							else
+								shop();
+							} else
 								missingGoldPrint(p.shop[2]);
 						missingGold = true;
 						shop();
@@ -413,6 +704,7 @@ public class Game {
 
 					}
 				}
+
 			}
 
 			if (position.equals("wonFight") && clickAssure) {
@@ -480,10 +772,14 @@ public class Game {
 						if (!currentMonster.isAlive()) {
 							hpLabel.setText("HP: " + p.getHp() + " / " + p.getMaxHp());
 							mainTextArea.setText(mobName + " is dead!\nExp gained: " + currentMonster.exp
-									+ "\nGold gained: " + currentMonster.goldDrop + "\nTotal gold: " + p.getGold()
-									+ "\n\n\nNow what?");
+									+ "\nGold gained: " + currentMonster.goldDrop + "\nTotal gold: " + p.getGold());
+							if (p.lvlUp)
+								mainTextArea.setText(mainTextArea.getText() + "\nLevel up!\n" + p.getUpgradePoints()
+										+ " upgrade points are available");
+							mainTextArea.setText(mainTextArea.getText() + "\n\nNow what?");
 							expLabel.setText("EXP: " + p.getCurrentExp() + " / " + p.getExpNeeded());
 							clickAssure = false;
+							p.lvlUp = false;
 							wonFight();
 							break;
 						}
@@ -496,8 +792,16 @@ public class Game {
 						if (currentMonster.lastHitTraitOccured) {
 							if (currentMonster instanceof Undead) {
 								Undead temp = (Undead) currentMonster;
-								mainTextArea.setText(mainTextArea.getText() + " and stole "
-										+ (int) (dmgToPlayer * temp.lifeStealRate / 100) + " hp");
+								mainTextArea.setText(mobName + " HP: " + currentMonster.getHp()
+										+ "\nYou swinged your sword at the " + mobName + " dealing " + dmgToMob
+										+ " damage\n" + mobName + " slashed you in return dealing " + dmgToPlayer
+										+ " damage" + " and stole " + (int) (dmgToPlayer * temp.lifeStealRate / 100)
+										+ " hp");
+							} else if (currentMonster instanceof Beast) {
+								mainTextArea.setText(
+										mobName + " HP: " + currentMonster.getHp() + "\nYou swinged your sword at the "
+												+ mobName + " dealing " + dmgToMob + " damage\n" + mobName
+												+ " slashed you in return dealing " + dmgToPlayer * 2 + " damage");
 							}
 						}
 						if (p.getHp() <= 0) {
@@ -533,7 +837,7 @@ public class Game {
 
 			if (position == "dead" && clickAssure) {
 				switch (yourChoice) {
-				case "c1":
+				case "c5":
 					p = new Player();
 					createNewShop = true;
 					playerSetup();
@@ -548,4 +852,28 @@ public class Game {
 
 	}
 
+}
+
+class JPanelWithBackground extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -891509991838385340L;
+	private Image backgroundImage;
+
+	// Some code to initialize the background image.
+	// Here, we use the constructor to load the image. This
+	// can vary depending on the use case of the panel.
+	public JPanelWithBackground() throws IOException {
+		backgroundImage = ImageIO
+				.read(new File("C:\\Users\\Adiel\\eclipse-workspace\\TextAdventure\\src\\BackgroundImage3.jpg"));
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		// Draw the background image.
+		g.drawImage(backgroundImage, 0, 0, this);
+	}
 }
